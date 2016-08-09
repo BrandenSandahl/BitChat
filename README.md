@@ -6,3 +6,4 @@ BitFountain Android Tutorial to Work With Parse
 * Pull contacts from phone
 * SimpleCursorAdapter to link a ListView with a Cursor
 * Implement LoaderManager that handles Cursors
+* Get Phone's phone number
