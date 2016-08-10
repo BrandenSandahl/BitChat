@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.parse.LogInCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -17,6 +18,7 @@ public class SignInActivity extends ActionBarActivity {
 
     private EditText mUserNumber;
     private EditText mPassword;
+    private EditText mName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class SignInActivity extends ActionBarActivity {
         mUserNumber.setText(phoneNumber);
 
         mPassword = (EditText) findViewById(R.id.user_password);
+        mName = (EditText) findViewById(R.id.user_name);
 
         Button signUpButton = (Button) findViewById(R.id.sign_up_button);
         signUpButton.setOnClickListener(new View.OnClickListener() {
@@ -41,11 +44,13 @@ public class SignInActivity extends ActionBarActivity {
                 user.setUsername(phoneNumber);
                 user.setPassword(mPassword.getText().toString());
 
+                user.put("name", mName.getText().toString());
+
                 user.signUpInBackground(new SignUpCallback() {
                     @Override
                     public void done(ParseException e) {
                         if (e == null) {
-                            Log.d("HERE", "SUCESS");
+                            SignInActivity.this.finish();
                         } else {
                             Log.d("HERE", e.getMessage().toString());
                         }
@@ -53,6 +58,25 @@ public class SignInActivity extends ActionBarActivity {
                 });
             }
         });
+
+        Button logInButton = (Button) findViewById(R.id.log_in_button);
+        logInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ParseUser.logInInBackground(mUserNumber.getText().toString(), mPassword.getText().toString(),
+                        new LogInCallback() {
+                            @Override
+                            public void done(ParseUser parseUser, ParseException e) {
+                                if (e == null) {
+                                    SignInActivity.this.finish();
+                                } else {
+                                    Log.d("HERE", e.getMessage().toString());
+                                }
+                            }
+                        });
+            }
+        });
+
 
     }
 }

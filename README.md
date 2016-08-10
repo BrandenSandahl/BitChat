@@ -9,3 +9,4 @@ BitFountain Android Tutorial to Work With Parse
 * Get Phone's phone number
 * Implement Parse
 * Create Parse User
+* Parse sign up and log in 
