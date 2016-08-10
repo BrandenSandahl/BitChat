@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.parse.Parse;
+
 
 public class ContactsActivity extends ActionBarActivity {
 
@@ -14,7 +16,11 @@ public class ContactsActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
 
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "9LwZ0pTAwiTsPsHxvd4mroaC146DOBJFT7Y8YFfp", "GJYNmvSje3k7zgDHy2vb30RsUX97pVcyogdQscJC");
+
         Intent i = new Intent(this, SignInActivity.class);
+        startActivity(i);
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
