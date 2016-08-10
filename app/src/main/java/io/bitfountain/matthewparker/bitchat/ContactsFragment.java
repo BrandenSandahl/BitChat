@@ -16,6 +16,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -110,9 +113,19 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
         );
     }
 
+    //when the cursor comes back with all the contacts
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursorAdapter.swapCursor(data);
+//        mCursorAdapter.swapCursor(data);
+        List<String> numbers = new ArrayList<>();
+
+        data.moveToFirst();
+        while (!data.isAfterLast()) {
+            String phoneNumber = data.getString(1);
+            phoneNumber = phoneNumber.replaceAll("-", "").replaceAll(" ", "");
+            numbers.add(phoneNumber);
+            data.moveToNext();
+        }
     }
 
     @Override
