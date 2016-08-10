@@ -34,11 +34,11 @@ import java.util.List;
  * to handle interaction events.
  */
 public class ContactsFragment extends Fragment implements AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+        ContactDataSource.Listener {
 
     private static final String TAG = "ContactsFragment";
 
-    private Listener mListener;
+    private ContactDataSource.Listener mListener;
 //    private SimpleCursorAdapter mCursorAdapter;
     private ArrayList<Contact> mContacts = new ArrayList<>();
     private ContactAdapter mAdapter;
@@ -56,29 +56,13 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
         ListView listView = (ListView) v.findViewById(R.id.list);
         listView.setOnItemClickListener(this);
 
-        //this is similar to a DB query, it's a projection of the columns I want to return
-        String[] columns = {ContactsContract.CommonDataKinds.Phone.NUMBER,
-                ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME};
+        ContactDataSource dataSource = new ContactDataSource(getActivity(), this);
 
-//        //note that actual query needs the ID b/c of the cursorAdapter
-//        Cursor cursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-//                new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.NUMBER,
-//                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME}, null, null, null);
-
-        int[] ids = {R.id.number, R.id.name};
-
-//        mCursorAdapter = new SimpleCursorAdapter(
-//                getActivity(),
-//                R.layout.contact_list_item,
-//                null,
-//                columns,
-//                ids,
-//                0);
 
         mAdapter = new ContactAdapter(mContacts);
         listView.setAdapter(mAdapter);
 
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(0, null, dataSource);
 
         return v;
     }
@@ -104,72 +88,20 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         //get the cursor from the parent view
-        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
-        cursor.moveToPosition(position);
-
-    }
-
-    /* cursor loader stuff */
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
-                getActivity(),
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                new String[]{ContactsContract.CommonDataKinds.Phone._ID, ContactsContract.CommonDataKinds.Phone.NUMBER,
-                        ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME},
-                null,
-                null,
-                null
-        );
-    }
-
-    //when the cursor comes back with all the contacts
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-//        mCursorAdapter.swapCursor(data);
-        List<String> numbers = new ArrayList<>();
-
-        data.moveToFirst();
-        while (!data.isAfterLast()) {
-            String phoneNumber = data.getString(1);
-            phoneNumber = phoneNumber.replaceAll("-", "").replaceAll(" ", "");
-            numbers.add(phoneNumber);
-            data.moveToNext();
-        }
-
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereContainedIn("username", numbers);
-        query.findInBackground(new FindCallback<ParseUser>() {
-            @Override
-            public void done(List<ParseUser> list, ParseException e) {
-                if (e == null) {
-                    mContacts.clear();
-                    for (ParseUser parseUser : list) {
-                        Contact contact = new Contact();
-                        contact.setName((String) parseUser.get("name"));
-                        contact.setPhoneNumber(parseUser.getUsername());
-                        mContacts.add(contact);
-                    }
-                    mAdapter.notifyDataSetChanged();
-                } else {
-                    Log.d("CONTACTSFRAG", e.getMessage().toString());
-                }
-            }
-        });
+//        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
+//        cursor.moveToPosition(position);
 
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-//        mCursorAdapter.swapCursor(null);
-    }
-    /* end of cursor loader */
-
-    //constraint to bring in Listener
-    public interface Listener {
-
+    public void onFetchedContacts(ArrayList<Contact> contacts) {
+        mContacts.clear();
+        mContacts.addAll(contacts);
+        mAdapter.notifyDataSetChanged();
     }
 
+
+    /* Extended Adapter Class */
     private class ContactAdapter extends ArrayAdapter<Contact> {
         ContactAdapter(ArrayList<Contact> contacts) {
             super(getActivity(), R.layout.contact_list_item, R.id.name, contacts);

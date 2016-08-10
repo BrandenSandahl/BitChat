@@ -11,3 +11,4 @@ BitFountain Android Tutorial to Work With Parse
 * Create Parse User
 * Parse sign up and log in 
 * Parse Query to look for matching users
+* DAO for Contacts Cursor
