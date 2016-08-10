@@ -38,6 +38,7 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
 
     private Listener mListener;
     private SimpleCursorAdapter mCursorAdapter;
+    private ArrayList<Contact> mContacts = new ArrayList<>();
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -138,7 +139,13 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
             @Override
             public void done(List<ParseUser> list, ParseException e) {
                 if (e == null) {
-
+                    mContacts.clear();
+                    for (ParseUser parseUser : list) {
+                        Contact contact = new Contact();
+                        contact.setName((String) parseUser.get("name"));
+                        contact.setPhoneNumber(parseUser.getUsername());
+                        mContacts.add(contact);
+                    }
                 } else {
                     Log.d("CONTACTSFRAG", e.getMessage().toString());
                 }
