@@ -16,6 +16,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -126,6 +131,20 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
             numbers.add(phoneNumber);
             data.moveToNext();
         }
+
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereContainedIn("username", numbers);
+        query.findInBackground(new FindCallback<ParseUser>() {
+            @Override
+            public void done(List<ParseUser> list, ParseException e) {
+                if (e == null) {
+
+                } else {
+                    Log.d("CONTACTSFRAG", e.getMessage().toString());
+                }
+            }
+        });
+
     }
 
     @Override

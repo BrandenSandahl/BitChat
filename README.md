@@ -10,3 +10,4 @@ BitFountain Android Tutorial to Work With Parse
 * Implement Parse
 * Create Parse User
 * Parse sign up and log in 
+* Parse Query to look for matching users
