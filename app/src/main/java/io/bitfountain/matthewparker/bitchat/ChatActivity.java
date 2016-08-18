@@ -17,7 +17,8 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 
-public class ChatActivity extends ActionBarActivity implements View.OnClickListener {
+public class ChatActivity extends ActionBarActivity implements View.OnClickListener,
+    MessageDataSource.Listener {
 
     public static final String CONTACT_NUMBER = "CONTACT_NUMBER";
 
@@ -33,7 +34,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mRecipient = getIntent().getStringExtra(CONTACT_NUMBER);
 
         mMessages = new ArrayList<>();
-        mMessages.add(new Message("a message", "18009999999"));
 
         ListView messageView = (ListView) findViewById(R.id.messages_list);
         mAdapter = new MessagesAdapter(mMessages);
@@ -41,6 +41,11 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
         Button sendMessage = (Button) findViewById(R.id.send_message);
         sendMessage.setOnClickListener(this);
+
+        MessageDataSource.fetchMessages(ContactDataSource.getCurrentUser().getPhoneNumber(),
+                mRecipient,
+                this
+                );
     }
 
     @Override
@@ -55,6 +60,13 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         mAdapter.notifyDataSetChanged();
         MessageDataSource.sendMessage(message.getSender(), mRecipient, message.getText());
 
+    }
+
+    @Override
+    public void onFetchedMessages(ArrayList<Message> messages) {
+        mMessages.clear();
+        mMessages.addAll(messages);
+        mAdapter.notifyDataSetChanged();
     }
 
 

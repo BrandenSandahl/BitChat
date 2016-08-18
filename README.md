@@ -17,3 +17,5 @@ BitFountain Android Tutorial to Work With Parse
 * Chat bubbles doing draw9
 * Chat adapter and display work
 * Message document to parse
+* DAO for messages
+* Message Query from Parse
