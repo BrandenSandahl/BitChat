@@ -3,6 +3,7 @@ package io.bitfountain.matthewparker.bitchat;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -33,12 +34,12 @@ import java.util.List;
  * {@link io.bitfountain.matthewparker.bitchat.ContactsFragment.Listener} interface
  * to handle interaction events.
  */
-public class ContactsFragment extends Fragment implements AdapterView.OnItemClickListener,
-        ContactDataSource.Listener {
+public class ContactsFragment extends Fragment implements
+        AdapterView.OnItemClickListener, ContactDataSource.Listener {
 
     private static final String TAG = "ContactsFragment";
 
-    private ContactDataSource.Listener mListener;
+    private Listener mListener;
 //    private SimpleCursorAdapter mCursorAdapter;
     private ArrayList<Contact> mContacts = new ArrayList<>();
     private ContactAdapter mAdapter;
@@ -71,7 +72,7 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-//            mListener = (OnFragmentInteractionListener) activity;
+            mListener = (Listener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -84,13 +85,14 @@ public class ContactsFragment extends Fragment implements AdapterView.OnItemClic
         mListener = null;
     }
 
+    public interface Listener {
+        void onContactSelected(Contact contact);
+    }
+
     //ListViews on click listener
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //get the cursor from the parent view
-//        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
-//        cursor.moveToPosition(position);
-
+        mListener.onContactSelected(mContacts.get(position));
     }
 
     @Override

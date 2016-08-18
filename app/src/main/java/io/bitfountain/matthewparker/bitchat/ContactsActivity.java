@@ -10,7 +10,7 @@ import com.parse.Parse;
 import com.parse.ParseUser;
 
 
-public class ContactsActivity extends ActionBarActivity {
+public class ContactsActivity extends ActionBarActivity implements ContactsFragment.Listener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public class ContactsActivity extends ActionBarActivity {
         Parse.initialize(this, "9LwZ0pTAwiTsPsHxvd4mroaC146DOBJFT7Y8YFfp", "GJYNmvSje3k7zgDHy2vb30RsUX97pVcyogdQscJC");
 
         //if no user logged in, log in
-        if (ParseUser.getCurrentUser() == null) {
+        if (ContactDataSource.getCurrentUser() == null) {
             Intent i = new Intent(this, SignInActivity.class);
             startActivity(i);
         }
@@ -54,5 +54,11 @@ public class ContactsActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onContactSelected(Contact contact) {
+        Intent i = new Intent(this, ChatActivity.class);
+        startActivity(i);
     }
 }

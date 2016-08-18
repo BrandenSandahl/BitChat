@@ -12,3 +12,7 @@ BitFountain Android Tutorial to Work With Parse
 * Parse sign up and log in 
 * Parse Query to look for matching users
 * DAO for Contacts Cursor
+* Chat class
+* Parse Current User to Singleton inside the ContactDataSource class
+* Chat bubbles doing draw9
+* Chat adapter and display work

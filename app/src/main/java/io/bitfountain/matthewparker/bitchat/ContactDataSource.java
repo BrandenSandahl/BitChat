@@ -21,6 +21,7 @@ import java.util.List;
  * Created by branden on 8/10/16.
  */
 public class ContactDataSource implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static Contact sCurrentUser;
 
     private Context mContext;
     private Listener mListener;
@@ -28,7 +29,15 @@ public class ContactDataSource implements LoaderManager.LoaderCallbacks<Cursor> 
     ContactDataSource(Context context, Listener listener) {
         mContext = context;
         mListener = listener;
+    }
 
+    public static Contact getCurrentUser() {
+        if (sCurrentUser == null && ParseUser.getCurrentUser() != null) {
+            sCurrentUser = new Contact();
+            sCurrentUser.setPhoneNumber(ParseUser.getCurrentUser().getUsername());
+            sCurrentUser.setName((String) ParseUser.getCurrentUser().get("name"));
+        }
+        return sCurrentUser;
     }
 
     @Override
@@ -64,7 +73,7 @@ public class ContactDataSource implements LoaderManager.LoaderCallbacks<Cursor> 
             @Override
             public void done(List<ParseUser> list, ParseException e) {
                 if (e == null) {
-                    ArrayList<Contact> contacts = new ArrayList<Contact>();
+                    ArrayList<Contact> contacts = new ArrayList<>();
                     for (ParseUser parseUser : list) {
                         Contact contact = new Contact();
                         contact.setName((String) parseUser.get("name"));
@@ -75,7 +84,7 @@ public class ContactDataSource implements LoaderManager.LoaderCallbacks<Cursor> 
                         mListener.onFetchedContacts(contacts);
                     }
                 } else {
-                    Log.d("CONTACTSFRAG", e.getMessage().toString());
+                    Log.d("ContactDataSource", e.getMessage().toString());
                 }
             }
         });

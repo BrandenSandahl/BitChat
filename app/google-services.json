@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "516582615984",
+    "firebase_url": "https://bitchat-d2c05.firebaseio.com",
+    "project_id": "bitchat-d2c05",
+    "storage_bucket": "bitchat-d2c05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:516582615984:android:d5573cdfcec31d34",
+        "android_client_info": {
+          "package_name": "io.bitfountain.matthewparker.bitchat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "516582615984-ph6ac7mqtq5947am68m3rguilisd69f1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.bitfountain.matthewparker.bitchat",
+            "certificate_hash": "D157D88F9F0892A5D9393A1429DB9427042A9552"
+          }
+        },
+        {
+          "client_id": "516582615984-jnbeemikve0bbreegik3385vll9c7mbp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjrm7c0CqyL7elmo8JsSVXFrNyngJEJ10"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "516582615984-jnbeemikve0bbreegik3385vll9c7mbp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
