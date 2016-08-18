@@ -16,3 +16,4 @@ BitFountain Android Tutorial to Work With Parse
 * Parse Current User to Singleton inside the ContactDataSource class
 * Chat bubbles doing draw9
 * Chat adapter and display work
+* Message document to parse
