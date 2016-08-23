@@ -1,6 +1,7 @@
 package io.bitfountain.matthewparker.bitchat;
 
 
+import android.os.Build;
 import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -28,7 +29,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     private MessagesAdapter mAdapter;
     private String mRecipient;
     private ListView mMessageView;
-    private Date mLastMessageDate;
+    private Date mLastMessageDate = new Date();
 
     private Handler mHandler = new Handler(); //handler that takes and handles runnables
     private Runnable mRunnable = new Runnable() { //runnable to fetch messages every X seconds
@@ -73,8 +74,6 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         newMessageView.setText("");
 
         Message message = new Message(newMessage, ContactDataSource.getCurrentUser().getPhoneNumber());
-
-        mMessages.add(message);
         mAdapter.notifyDataSetChanged();
         MessageDataSource.sendMessage(message.getSender(), mRecipient, message.getText());
 
@@ -127,10 +126,18 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
             LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) nameView.getLayoutParams();
 
             if (message.getSender().equals(ContactDataSource.getCurrentUser().getPhoneNumber())) {
-                nameView.setBackground(getDrawable(R.drawable.bubble_right_green));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    nameView.setBackground(getDrawable(R.drawable.bubble_right_green));
+                } else {
+                    nameView.setBackgroundDrawable(getDrawable(R.drawable.bubble_right_green));
+                }
                 layoutParams.gravity = Gravity.RIGHT;
             } else {
-                nameView.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    nameView.setBackground(getDrawable(R.drawable.bubble_left_gray));
+                } else {
+                    nameView.setBackgroundDrawable(getDrawable(R.drawable.bubble_left_gray));
+                }
                 layoutParams.gravity = Gravity.LEFT;
             }
             nameView.setLayoutParams(layoutParams);

@@ -22,3 +22,4 @@ BitFountain Android Tutorial to Work With Parse
 * query to search or messages after a certain time
 * Add created at time/date
 * Add Handler and Runnable to fetch new messages every X seconds
+* if/else for version control
