@@ -6,13 +6,14 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by branden on 8/18/16.
  */
 public class MessageDataSource {
-    public static void sendMessage(String sender, String recipient, String text){
+    public static void sendMessage(String sender, String recipient, String text) {
         ParseObject message = new ParseObject("Message");
         message.put("sender", sender);
         message.put("recipient", recipient);
@@ -20,8 +21,47 @@ public class MessageDataSource {
         message.saveInBackground();
     }
 
+    public static void fetchMessagesAfter(String sender, String recipient, Date after, final Listener listener) {
+        ParseQuery<ParseObject> mainQuery = messagesQuery(sender, recipient);
+
+        mainQuery.whereGreaterThan("createdAt", after);
+
+        mainQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                ArrayList<Message> messages = new ArrayList<Message>();
+                for (ParseObject parseObject : list) {
+                    Message message = new Message((parseObject.getString("text")), parseObject.getString("sender"));
+                    message.setDate(parseObject.getCreatedAt());
+                    messages.add(message);
+                }
+                listener.onAddMessages(messages);
+            }
+        });
+
+
+    }
+
 
     public static void fetchMessages(String sender, String recipient, final Listener listener) {
+
+        ParseQuery<ParseObject> mainQuery = messagesQuery(sender, recipient);
+
+        mainQuery.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                ArrayList<Message> messages = new ArrayList<Message>();
+                for (ParseObject parseObject : list) {
+                    Message message = new Message(( parseObject.getString("text")), ( parseObject.getString("sender")));
+                    message.setDate(parseObject.getCreatedAt());
+                    messages.add(message);
+                }
+                listener.onFetchedMessages(messages);
+            }
+        });
+    }
+
+    private static ParseQuery<ParseObject> messagesQuery(String sender, String recipient) {
         ParseQuery<ParseObject> querySent = ParseQuery.getQuery("Message");
         querySent.whereEqualTo("sender", sender);
         querySent.whereEqualTo("recipient", recipient);
@@ -37,22 +77,17 @@ public class MessageDataSource {
 
         //if one or the other queries returns something
         ParseQuery<ParseObject> mainQuery = ParseQuery.or(queries);
-        mainQuery.findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                ArrayList<Message> messages = new ArrayList<Message>();
-                for (ParseObject parseObject : list) {
-                    Message message = new Message(((String) parseObject.get("text")), ((String) parseObject.get("sender")));
-                    messages.add(message);
-                }
-                listener.onFetchedMessages(messages);
-            }
-        });
+        mainQuery.orderByAscending("createdAt");
+
+        return mainQuery;
+
+
     }
 
 
     public interface Listener {
         public void onFetchedMessages(ArrayList<Message> messages);
+        public void onAddMessages(ArrayList<Message> messages);
     }
 
 }

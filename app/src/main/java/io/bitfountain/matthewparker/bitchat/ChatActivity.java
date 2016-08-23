@@ -1,8 +1,10 @@
 package io.bitfountain.matthewparker.bitchat;
 
-import android.graphics.Color;
+
+import android.os.Handler;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +15,34 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ChatActivity extends ActionBarActivity implements View.OnClickListener,
-    MessageDataSource.Listener {
+        MessageDataSource.Listener {
 
     public static final String CONTACT_NUMBER = "CONTACT_NUMBER";
 
     private ArrayList<Message> mMessages;
     private MessagesAdapter mAdapter;
     private String mRecipient;
+    private ListView mMessageView;
+    private Date mLastMessageDate;
+
+    private Handler mHandler = new Handler(); //handler that takes and handles runnables
+    private Runnable mRunnable = new Runnable() { //runnable to fetch messages every X seconds
+        @Override
+        public void run() {
+            Log.d("ChatActivity", "Fetched new messages");
+            MessageDataSource.fetchMessagesAfter(ContactDataSource.getCurrentUser().getPhoneNumber(),
+                    mRecipient,
+                    mLastMessageDate,
+                    ChatActivity.this);
+            mHandler.postDelayed(this, 2000);
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +53,9 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
 
         mMessages = new ArrayList<>();
 
-        ListView messageView = (ListView) findViewById(R.id.messages_list);
+        mMessageView = (ListView) findViewById(R.id.messages_list);
         mAdapter = new MessagesAdapter(mMessages);
-        messageView.setAdapter(mAdapter);
+        mMessageView.setAdapter(mAdapter);
 
         Button sendMessage = (Button) findViewById(R.id.send_message);
         sendMessage.setOnClickListener(this);
@@ -45,7 +63,7 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
         MessageDataSource.fetchMessages(ContactDataSource.getCurrentUser().getPhoneNumber(),
                 mRecipient,
                 this
-                );
+        );
     }
 
     @Override
@@ -65,10 +83,32 @@ public class ChatActivity extends ActionBarActivity implements View.OnClickListe
     @Override
     public void onFetchedMessages(ArrayList<Message> messages) {
         mMessages.clear();
-        mMessages.addAll(messages);
-        mAdapter.notifyDataSetChanged();
+        addMessages(messages);
+        mHandler.postDelayed(mRunnable, 1000);
+
+
     }
 
+    @Override
+    public void onAddMessages(ArrayList<Message> messages) {
+        addMessages(messages);
+    }
+
+    private void addMessages(ArrayList<Message> messages) {
+        mMessages.addAll(messages);
+        mAdapter.notifyDataSetChanged();
+        if (mMessages.size() > 0) {
+            mMessageView.setSelection(mMessages.size() - 1);
+            Message message = mMessages.get(mMessages.size() - 1);
+            mLastMessageDate = message.getDate();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(null); //removes all attached runnables
+    }
 
     /* Extended Adapter Class */
     private class MessagesAdapter extends ArrayAdapter<Message> {
